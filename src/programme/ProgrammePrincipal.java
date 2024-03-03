@@ -1,77 +1,41 @@
 package programme;
 
 import java.util.Random;
-
 import modele.satelliteRelai.SatelliteRelai;
-
-import utilitaires.mynode;
-
-import utilitaires.mylinkedlist;
-
-import utilitaires.LinkedList;
-
-import utilitaires.Node;
+import modele.communication.Message;
+import modele.centreControle.CentreControle.CentreControle;
+import modele.rover.Rover.Rover;
 
 public class ProgrammePrincipal {
 
-	/**
-	 * Programme principale, instancie les éléments de la simulation,
-	 * les lie entre eux, puis lance la séquence de test.
-	 * @param args, pas utilisé
-	 */
-	public static void main(String[] args){
+    public static void main(String[] args) {
+        Random rand = new Random();
+        System.out.println(rand.nextDouble());
+        SatelliteRelai satellite = new SatelliteRelai();
+        satellite.start();
 
-		/*Random rand = new Random();
-		System.out.println(rand.nextDouble());
-	
-		SatelliteRelai satellite = new SatelliteRelai();
-		satellite.start();
-		mylinkedlist linkedlist = new mylinkedlist();
-		for (int i = 0; i < 10; i++) {
-			linkedlist.ajouterElement(i,i);
-		}
+        Rover rover = new Rover(satellite);
+        CentreControle centreControle = new CentreControle(satellite);
+        satellite.lierRover(rover);
+        satellite.lierCentrOp(centreControle);
 
-		//linkedlist.ajouterElement(10, 1);
+        for(int i = 0; i < 10; ++i) {
+        	
+            Message msg = new Message(i) {
+                @Override
+                public String toString() {
+                    return "Message " + getCompte();
+                }
+            };
+            centreControle.envoyerMessage(msg);
+            rover.envoyerMessage(msg);
+            System.out.println("Message " + i + " envoyé.");
+        }
 
-		mynode n = linkedlist.getTail();
-		int k = linkedlist.getCount();
-		for (int i = 0; i < k; i++) {
-			System.out.print(n.getData()+ " ");
-			n=n.getNext();
-		}
-		linkedlist.enleverElement(0);
-		linkedlist.enleverElement(0);
-		linkedlist.enleverElement(0);
-		linkedlist.enleverElement(0);
-		n = linkedlist.getTail();
-		System.out.print("\n"+linkedlist.getCount()+"\n");
-		for (int i = 0; i < linkedlist.getCount(); i++) {
-			System.out.print(n.getData()+ " ");
-			n=n.getNext();
-		}*/
-		SatelliteRelai satellite = new SatelliteRelai();
-		satellite.start();
-		LinkedList linkedlist = new LinkedList();
-		for (int i = 0; i < 10; i++) {
-			linkedlist.ajouterElement(i);
-		}
-
-		Node n = linkedlist.getTail();
-		int k = linkedlist.getCount();
-		for (int i = 0; i < k; i++) {
-			System.out.print(n.getData()+ " ");
-			n=n.getNext();
-		}
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		n = linkedlist.getTail();
-		System.out.print("\n");
-		for (int i = 0; i < linkedlist.getCount(); i++) {
-			System.out.print(n.getData() + " ");
-			n = n.getNext();
-		}
-	}
-
+        try {
+            Thread.sleep(SatelliteRelai.TEMPS_CYCLE_MS * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
