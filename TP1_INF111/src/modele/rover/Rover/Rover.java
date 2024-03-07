@@ -1,18 +1,30 @@
 package modele.rover.Rover;
 
 import modele.communication.*;
+import modele.satelliteRelai.SatelliteRelai;
 
 
 public class Rover extends TransporteurMessage {
 
-	  public Rover() {
-	        super();
-	    }
+    SatelliteRelai relai;
 
-	    @Override
-	    protected void envoyerMessage(Message msg) {}
+    public Rover(SatelliteRelai satellite) {
+        super();
+        this.relai = satellite;
+    }
 
-	    @Override
-	    protected void gestionnaireMessage(Message msg) {}
+    @Override
+	public void envoyerMessage(Message msg) {
+        this.relai.envoyerMessageVersCentrOp(msg);
+        this.messagesEnvoyes.ajouterElement(msg);
+    }
+
+    @Override
+    protected void gestionnaireMessage(Message msg) {
+        if (msg != null){
+            this.messagesRecus.ajouterElement(msg);
+            System.out.println("Message recu de classe "+msg.getClass().getName()+" \nCompte: "+ msg.getCompte());
+        }
+    }
 
 }
