@@ -42,7 +42,7 @@ public class LinkedList {
 	      Node newnode = new Node(ele);
 	      if (pos <= this.count && pos >= 0) {
 	         if (pos == 0) {
-	            newnode.setNext((Node)null);
+	            newnode.setNext(this.tail);
 	            this.tail = newnode;
 	         } else if (this.estVide()) {
 	            if (this.estVide()) {
