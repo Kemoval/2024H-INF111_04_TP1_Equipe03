@@ -1,45 +1,59 @@
 package programme;
 
-import java.io.IOException;
-
+import java.util.Random;
 import modele.satelliteRelai.SatelliteRelai;
-
-import utilitaires.Node;
-
-import utilitaires.LinkedList;
+import modele.communication.*;
+import modele.centreControle.CentreControle.CentreControle;
+import modele.rover.Rover.Rover;
 
 public class ProgrammePrincipal {
 
-	/**
-	 * Programme principale, instancie les éléments de la simulation,
-	 * les lie entre eux, puis lance la séquence de test.
-	 * @param args, pas utilisé
-	 */
-	public static void main(String[] args){
-	
-		SatelliteRelai satellite = new SatelliteRelai();
-		satellite.start();
-		LinkedList linkedlist = new LinkedList();
-		for (int i = 0; i < 10; i++) {
-			linkedlist.ajouterElement(i);
-		}
+    public static void main(String[] args) {
+        Random rand = new Random();
+        System.out.println(rand.nextDouble());
+        SatelliteRelai satellite = new SatelliteRelai();
+        satellite.start();
 
-		Node n = linkedlist.getTail();
-		int k = linkedlist.getCount();
-		for (int i = 0; i < k; i++) {
-			System.out.print(n.getData()+ " ");
-			n=n.getNext();
-		}
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		linkedlist.enleverElement();
-		n = linkedlist.getTail();
-		System.out.print("\n");
-		for (int i = 0; i < linkedlist.getCount(); i++) {
-			System.out.print(n.getData()+ " ");
-			n=n.getNext();
-		}
-	}
+        Rover rover = new Rover(satellite);
+        CentreControle centreControle = new CentreControle(satellite);
 
+        // Lier le Rover et le CentreControle au SatelliteRelai
+        satellite.lierRover(rover);
+        satellite.lierCentrOp(centreControle);
+
+        for(int i = 0; i < 10; ++i) {
+            Message msg;
+            if (i % 3 == 0) {
+                msg = new Message(i) {
+                    @Override
+                    public String toString() {
+                        return "Message " + getCompte();
+                    }
+                };
+            } else if (i % 3 == 1) {
+                msg = new Nack(i) {
+                    @Override
+                    public String toString() {
+                        return "Nack " + getCompte();
+                    }
+                };
+            } else {
+                msg = new NoOp(i) {
+                    @Override
+                    public String toString() {
+                        return "NoOp " + getCompte();
+                    }
+                };
+            }
+            centreControle.envoyerMessage(msg);
+            rover.envoyerMessage(msg);
+            System.out.println("Message " + i + " envoyé.");
+        }
+
+        try {
+            Thread.sleep(SatelliteRelai.TEMPS_CYCLE_MS * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
