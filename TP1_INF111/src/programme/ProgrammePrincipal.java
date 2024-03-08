@@ -55,7 +55,7 @@ public class ProgrammePrincipal {
         for(int i = 0; i < 10; ++i) {
             Message msg;
             if (i % 3 == 0) {
-                msg = new Message(i) {
+                msg = new testmessage(i) {
                     @Override
                     public String toString() {
                         return "Message " + getCompte();
@@ -80,6 +80,19 @@ public class ProgrammePrincipal {
             rover.envoyerMessage(msg);
             System.out.println("Message " + i + " envoyé.");
         }
+
+        for(int i = 0; i < 10; ++i) {
+            Message msg1 = new testmessage(i);
+            //Message msg2 = new testmessage(i*2);
+
+            centreControle.envoyerMessage(msg1);
+            rover.gestionnaireMessage(msg1);
+            //rover.envoyerMessage(msg2);
+            //centreControle.gestionnaireMessage(msg2);
+        }
+        rover.run();
+        //centreControle.run();
+        
 
         try {
             Thread.sleep(SatelliteRelai.TEMPS_CYCLE_MS * 15);
