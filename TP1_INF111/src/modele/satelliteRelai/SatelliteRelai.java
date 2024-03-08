@@ -94,29 +94,32 @@ public class SatelliteRelai extends Thread{
 	@Override
 	public void run() {
 	    while(true) {
-	        for (int i = 0; i < 5; i++) {
-	            Nack message = new Nack(i); 
-	            envoyerMessageVersCentrOp(message);
-	            System.out.println("Message ajouté à la file du satellite: " + message.getCompte());
-	        }
 
-	     
-	        try {
-	            Thread.sleep(TEMPS_CYCLE_MS);
-	        } catch (InterruptedException e) {
-	            e.printStackTrace();
-	        }
 
+	        // Enlever les messages de la file du satellite
 	        while (!queueCtr.estVide()) {
-	            Message message = (Message) queueCtr.getTail().getData();
-	            if (message instanceof Nack) {
-	                Nack nackMessage = (Nack) message;
-	                queueCtr.enleverElement();
-	                System.out.println("Message envoyé au centre de contrôle: " + nackMessage.getCompte());
-	            }
+				Message message = (Message) queueCtr.getTail().getData(); // Récupérer le message NoOp
+				ctr.gestionnaireMessage(message);
+	            queueCtr.enleverElement(); // Enlever le message de la file
+	           //System.out.println("Message envoyé du centre de controle au rover: " + message.getCompte());
+				System.out.println("run queue centre " + message.getCompte());
 	        }
+
+			while (!queueCtr.estVide()) {
+				Message message = (Message) queueRover.getTail().getData(); // Récupérer le message NoOp
+				rov.gestionnaireMessage(message);
+				queueRover.enleverElement(); // Enlever le message de la file
+				//System.out.println("Message envoyé du rover au centre de contrôle: " + message.getCompte());
+				System.out.println("run queue rover " + message.getCompte());
+			}
+
+			// Attendre un certain temps pour simuler le passage du temps
+			try {
+				Thread.sleep(TEMPS_CYCLE_MS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	    }
-	}
 	
 	
 
