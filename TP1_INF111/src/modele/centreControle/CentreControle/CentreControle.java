@@ -22,16 +22,8 @@ public class CentreControle extends TransporteurMessage {
     @Override
     public void gestionnaireMessage(Message msg) {
         if (msg != null){
-            if (msg.getCompte() == numGestionnaire){
-                this.receptionMessageDeSatellite(msg);
-                System.out.println("CentreControle recu message de classe "+msg.getClass().getName()+" \nCompte: "+ msg.getCompte());
-                ++numGestionnaire;
-            }
-            else {
-                Nack nack = new Nack(numGestionnaire);
-                envoyerMessage(nack);
-            }
-
+            this.receptionMessageDeSatellite(msg);
+            System.out.println("CentreControle recu message de classe "+msg.getClass().getName()+" \nCompte: "+ msg.getCompte());  
         }
     }
 }
