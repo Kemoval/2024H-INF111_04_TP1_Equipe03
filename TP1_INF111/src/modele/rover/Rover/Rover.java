@@ -8,6 +8,8 @@ public class Rover extends TransporteurMessage {
 
     SatelliteRelai relai;
 
+    private int numGestionnaire = 0;
+
     public Rover(SatelliteRelai satellite) {
         super();
         this.relai = satellite;
@@ -20,11 +22,18 @@ public class Rover extends TransporteurMessage {
     }
 
     @Override
-    protected void gestionnaireMessage(Message msg) {
+    public void gestionnaireMessage(Message msg) {
+
         if (msg != null){
-            this.messagesRecus.ajouterElement(msg);
-            System.out.println("Message recu de classe "+msg.getClass().getName()+" \nCompte: "+ msg.getCompte());
+            if (msg.getCompte() == numGestionnaire){
+                this.receptionMessageDeSatellite(msg);
+                System.out.println("Rover recu message de classe "+msg.getClass().getName()+" \nCompte: "+ msg.getCompte());
+                ++numGestionnaire;
+            }
+            else {
+                Nack nack = new Nack(numGestionnaire);
+                envoyerMessage(nack);
+            }
         }
     }
-
 }
