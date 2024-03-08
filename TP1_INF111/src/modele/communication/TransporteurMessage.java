@@ -65,8 +65,14 @@ public abstract class TransporteurMessage extends Thread {
         lock.lock();
         try {
             if (msg instanceof Nack) {
+                Node n = messagesRecus.getTail();
+                int p = 0;
+                while(n.getNext().getData() instanceof Nack){
+                    p++;
+                    n = n.getNext();
+                }
                 // Ajouter le Nack au début de la liste des messages reçus
-                messagesRecus.ajouterElement(msg, 0);
+                messagesRecus.ajouterElement(msg, p);
             } else {
                 // Évaluer la position du message dans la liste
                 int position = 0;
